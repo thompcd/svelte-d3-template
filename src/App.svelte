@@ -1,11 +1,5 @@
 <script>
-
+    import Timeline from './Timeline.svelte'; 
 </script>
-
-<main>
-
-</main>
-
-<style>
-  
-</style>
+    
+<Timeline />
