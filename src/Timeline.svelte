@@ -17,7 +17,7 @@
 {#await promise}
 <p>Loading...</p>
 {:then value}
-<li>
+<li class="heading">
     <ul class="locations location">
             <li class="q418">Q4 2018</li>
             <li class="q119">Q1 2019</li>
@@ -29,13 +29,13 @@
 
 <ul class="locations">
 	{#each locations as { company_name, Q42018, Q12019, Q22019, Q32019, Q42019 }, i}
-		<li>
+		<li class="entry">
 			<h4>{company_name}</h4>
             <ul class="locations location">
-                    <li class="q418">{Q42018}</li>
-                    <li class="q119">{Q12019}</li>
-                    <li class="q219">{Q22019}</li>
-                    <li class="q319">{Q32019}</li>
+                    <li class="q418 follow">{Q42018}</li>
+                    <li class="q119 follow">{Q12019}</li>
+                    <li class="q219 follow">{Q22019}</li>
+                    <li class="q319 follow">{Q32019}</li>
                     <li class="q419">{Q42019}</li>
             </ul>
 		</li>
@@ -46,6 +46,16 @@
 {/await}
 
 <style>
+    .heading{
+        padding: 2rem;
+        margin: 1rem;
+        list-style: none;
+    }
+    .entry{
+        border: #000 solid 1px;
+        padding: 2rem;
+        margin: 1rem;
+    }
     .locations{
         list-style: none;
     }
@@ -56,6 +66,20 @@
         grid-template-rows: 3fr 1fr;
     }
 
+    /* draw a line after the entries */
+    .follow{
+        display: flex;
+        align-items: center;
+    }
+    .follow::after{
+        content: '';
+        flex: 1;
+        margin: 0 1rem;
+        height: 1px;
+        background-color: #000;
+    }
+
+    /* align the items according to date, evenly spaced  */
     .q418{
         grid-row: 1 / span 1;
         grid-column: 2 / span 1 ;
