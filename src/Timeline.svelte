@@ -80,7 +80,9 @@
     {/each}
     </main>
 {:catch error}
-<h4>Error finding data</h4>
+<main class="grid">
+    <span style="justify-self: center; padding: 4rem;">Error finding data</span>
+</main>
 {/await}
 
 <style>
