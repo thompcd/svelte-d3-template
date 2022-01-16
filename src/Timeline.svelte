@@ -23,6 +23,29 @@
             val.Q12020, val.Q22020, val.Q32020, val.Q42020, 
             val.Q12021, val.Q22021, val.Q32021, val.Q42021, 
             val.Q12022];
+
+            val.summary = 'Undetermined';
+
+            if (val.event_history.includes('🚫')){
+                val.summary = 'Rejected'
+            }
+            else if (val.event_history.includes('☠')){
+                val.summary = 'Shutdown'
+            }
+            else if (val.event_history.includes('⁉')){
+                if (val.event_history.includes('🚀')){
+                    val.summary = "Sold out"
+                }
+                else{
+                    val.summary = 'Temultuous'
+                }
+            }
+            else if (val.event_history.includes('🚀')){
+                val.summary = 'Signs of growth'
+            }
+            else{
+                val.summary = 'Steady'
+            }
         });
         locations.entry_titles =
             [
@@ -59,23 +82,22 @@
 <main class="grid">
     <ul class="flatGrid unformatted-list">
         {#each locations.entry_titles as title, i}
-             <li class="sideways" style="grid-row: 1 / span 1; grid-column: {i} / span 1">{title}</li>
+             <li class="sideways" style="grid-row: 1 / span 1; grid-column: {i + 1} / span 1">{title}</li>
         {/each}
     </ul>
 
-    {#each locations as { company_name, location, event_history }, i}
-        <div class="entry subgrid">
-            <h1 class="name">{company_name}</h1>
-            <h3 class="address">{location}</h3>
-            <ul class="unformatted-list location subgrid point">
-                    {#each event_history as item, i}
-                    <li 
-                    class="quarter follow" 
-                    style="grid-row: 1 / span 1; grid-column: {i} / span 1">
-                    {item === '' ? '|' : item}
-                    </li>
-                    {/each}
-            </ul>
+    {#each locations as { company_name, location, event_history, summary }, i}
+        <div class="entry subgrid" style="grid-template-columns: repeat({gridColCount}, 6rem)">
+            <span class="name">{company_name}</span>
+            <span class="address">{location}</span>
+            <span class="summary" style="grid-row: 1 / span 1; grid-column: 14 / span 2">Summary: {summary}</span>
+            {#each event_history as item, i}
+            <div 
+            class="quarter follow" 
+            style="grid-row: 4 / span 1; grid-column: {i + 1} / span 1">
+            {item === '' ? '|' : item}
+            </div>
+            {/each}
         </div>
     {/each}
     </main>
@@ -136,6 +158,11 @@
         padding: 0;
         margin-left: 0;
     }
+    .unformatted-list li{
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+    }
 
     /* layout timeline event labels */
     .flatGrid{
@@ -157,7 +184,7 @@
     /* a subgrid entry should re-use the columns but have a different row structure */
     .subgrid{
         display: grid;
-        grid-template-columns: repeat(var(--gridColCount), 6rem);
+        /* grid-template-columns: repeat(var(--gridColCount), 6rem); */
         grid-template-rows: repeat(4, 3rem);
     }
     .entry{
@@ -185,10 +212,13 @@
     /* align the items according to date, evenly spaced  */
     .name{
         grid-row: 1 / span 1;
-        grid-column: 1 / span 1;  
+        grid-column: 1 / span 4;  
     }
     .address{
         grid-row: 2 / span 1;
-        grid-column: 1 / span 1;
+        grid-column: 1 / span 4;
+    }
+    .summary{
+        grid-row: 1 / span 1;
     }
 </style>
