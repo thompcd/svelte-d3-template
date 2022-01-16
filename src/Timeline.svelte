@@ -1,16 +1,19 @@
 <script>
 	import * as d3 from 'd3';
 
+    // css vars
+    let gridRowCount = 3;
+    let gridColCount = 0;
+
+    // data source loading
     const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTrjMuX6haFMe0H5K3WE62OPQo2cDIxOtBB28hk4KQj43uGu06PaYKtyZJrEqCu8A/pub?gid=317408256&single=true&output=csv';
     let locations = []
     let promise = loadData();
-
 	async function loadData(){
 		// d3.csv returns a promise. await "pauses" the execution untill the promise resolves
         locations = await d3.csv(spreadsheetUrl)
 	}
 
-    $:console.log(locations);
     // build an array of history from imported flat data
     $:{
         locations.forEach(val => {
@@ -21,15 +24,25 @@
             val.Q12021, val.Q22021, val.Q32021, val.Q42021, 
             val.Q12022];
         });
+        locations.entry_titles =
+            [
+                'Q4 2018',
+                'Q1 2019', 'Q2 2019', 'Q3 2019', 'Q4 2019',
+                'Q1 2020', 'Q2 2020', 'Q3 2020', 'Q4 2020',
+                'Q1 2021', 'Q2 2021', 'Q3 2021', 'Q4 2021',
+                'Q1 2022'
+            ];
+    }
+    // calculate number of css grid columns based on time entries
+    $:{
+        gridColCount = locations.entry_titles.length + 2;
     }
 </script>
-<h1 style="display: flex; justify-content: center">Sapulpa Dispensary Activity</h1>
-{#await promise}
-<p>Loading...</p>
-{:then value}
-
-<ul class="heading locations">
-    <ul class="legend">
+<header class="header headerGrid">
+    <h1 class="title">Dispensary Business Health in Sapulpa</h1>
+    <h3 class="subtitle">How many dispensaries is too many?</h3>
+    <h4 class="timelineLabel">Date by annual quarters</h4>
+    <ul class="legend unformatted-list">
         <li>⏳ - Application for permit</li>
         <li>🚫 - Application denied</li>
         <li>🎉 - Business opened</li>
@@ -37,59 +50,115 @@
         <li>⁉ - Change in ownership</li>
         <li>☠ - Business closed</li>
     </ul>
-    <li class="q418">Q4 2018</li>
-    <li class="q119">Q1 2019</li>
-    <li class="q219">Q2 2019</li>
-    <li class="q319">Q3 2019</li>
-    <li class="q419">Q4 2019</li>
-    <li class="q120">Q1 2020</li>
-    <li class="q220">Q2 2020</li>
-    <li class="q320">Q3 2020</li>
-    <li class="q420">Q4 2020</li>
-    <li class="q121">Q1 2021</li>
-    <li class="q221">Q2 2021</li>
-    <li class="q321">Q3 2021</li>
-    <li class="q421">Q4 2021</li>
-    <li class="q122">Q1 2022</li>  
-</ul>
+</header>
+{#await promise}
+<p>Loading...</p>
+{:then value}
+<main class="grid">
+    <ul class="flatGrid unformatted-list">
+        {#each locations.entry_titles as title, i}
+             <li class="sideways" style="grid-row: 1 / span 1; grid-column: {i} / span 1">{title}</li>
+        {/each}
+    </ul>
 
-<ul class="locations">
-	{#each locations as { company_name, location, event_history }, i}
-		<li class="entry">
-			<h2>{company_name}</h2>
-            <h4 class="address">{location}</h4>
-            <ul class="locations location">
+    {#each locations as { company_name, location, event_history }, i}
+        <div class="entry subgrid">
+            <h1 class="name">{company_name}</h1>
+            <h3 class="address">{location}</h3>
+            <ul class="unformatted-list location subgrid point">
                     {#each event_history as item, i}
                     <li 
                     class="quarter follow" 
-                    style="grid-row: 1 / span 1; grid-column: {2 + i} / span 1">
-                    {item}
+                    style="grid-row: 1 / span 1; grid-column: {i} / span 1">
+                    {item === '' ? '|' : item}
                     </li>
                     {/each}
             </ul>
-		</li>
-	{/each}
-</ul>
+        </div>
+    {/each}
+    </main>
 {:catch error}
 <h4>Error finding data</h4>
 {/await}
 
 <style>
-    /* add layout boxes and borders */
-    .heading{
+    /* top bar */
+    .header{
+        position: relative;
+        height: 10rem;
+        background-image: linear-gradient(#18993b, #037321);
+        border-bottom-left-radius: 50% 20%;
+        border-bottom-right-radius: 50% 20%;
+        padding: 1rem 1rem 0 1rem;
+    }
+    .headerGrid{
         display: grid;
-        grid-template-columns: 300px 100px 100px 100px 100px 100px;
-        grid-template-rows: 3fr;
-        margin: 0 2.5rem;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 3fr);
+    }
+    .title{
+        color: white;
+        grid-row: 1 / span 1;
+        grid-column: 1 / span 2;
+        margin: 0;
+    }
+    .subtitle{
+        color: white;
+        grid-row: 2 / span 1;
+        grid-column: 1 / span 2;
+        margin: 0;
+        justify-content: start;
+    }
+    .timelineLabel{
+        color: white;
+        grid-row: 3 / span 1;
+        grid-column: 2 / span 1;
+        justify-self: center;
+        font-size: 2rem;
+    }
+    .legend{
+        color: white;
+        grid-row: 1 / span 4;
+        grid-column: 3 / span 1;
+        margin: 0;
+        justify-self: end;
+    }
+    .sideways{
+        transform: rotate(-90deg);
+        margin-bottom: 2rem;
+    }
+    .unformatted-list{
+        list-style: none;
+        padding: 0;
+        margin-left: 0;
+    }
+
+    /* layout timeline event labels */
+    .flatGrid{
+        display: grid;
+        grid-template-columns: repeat(var(--gridColCount), 6rem);
+        grid-template-rows: 3rem;
+    }
+
+    /* add layout boxes and borders */
+    .grid{
+        display: grid;
+        grid-template-columns: repeat(var(--gridColCount), 6rem);
+        grid-template-rows: repeat(var(--gridRowCount), 3rem);
+        grid-row-gap: 1rem;
+        padding: 1rem;
+        padding-top: 0;
+    }
+
+    /* a subgrid entry should re-use the columns but have a different row structure */
+    .subgrid{
+        display: grid;
+        grid-template-columns: repeat(var(--gridColCount), 6rem);
+        grid-template-rows: repeat(4, 3rem);
     }
     .entry{
         border: #000 solid 1px;
         padding: 2rem;
-        margin: 1rem;
-    }
-    .locations{
-        list-style: none;
-        padding: 0;
     }
 
     /* icon size */
@@ -110,43 +179,12 @@
     }
     
     /* align the items according to date, evenly spaced  */
-    .location{
-        display: grid;
-        grid-template-columns: 300px repeat(14, 100px);
-        grid-template-rows: 3fr 1fr;
-    }
-    .legend{
+    .name{
         grid-row: 1 / span 1;
-        grid-column: 1 / span 1;
-        list-style: none;
+        grid-column: 1 / span 1;  
     }
     .address{
         grid-row: 2 / span 1;
         grid-column: 1 / span 1;
-    }
-    .q418{
-        grid-row: 1 / span 1;
-        grid-column: 2 / span 1 ;
-        align-self: end;
-    }
-    .q119{
-        grid-row: 1 / span 1;
-        grid-column: 3 / span 1 ;
-        align-self: end;
-    }
-    .q219{
-        grid-row: 1 / span 1;
-        grid-column: 4 / span 1 ;
-        align-self: end;
-    }
-    .q319{
-        grid-row: 1 / span 1;
-        grid-column: 5 / span 1 ;
-        align-self: end;
-    }
-    .q419{
-        grid-row: 1 / span 1;
-        grid-column: 6 /span 1 ;
-        align-self: end;
     }
 </style>
