@@ -58,7 +58,7 @@
     }
     // calculate number of css grid columns based on time entries
     $:{
-        gridColCount = locations.entry_titles.length + 2;
+        gridColCount = locations.entry_titles.length;
     }
 </script>
 <header class="header headerGrid">
@@ -167,8 +167,6 @@
     /* layout timeline event labels */
     .flatGrid{
         display: grid;
-        grid-template-columns: repeat(var(--gridColCount), 6rem);
-        grid-template-rows: 3rem;
     }
 
     /* add layout boxes and borders */
@@ -211,8 +209,9 @@
     
     /* align the items according to date, evenly spaced  */
     .name{
+        font-size: 1.5rem;
         grid-row: 1 / span 1;
-        grid-column: 1 / span 4;  
+        grid-column: 1 / span 6;  
     }
     .address{
         grid-row: 2 / span 1;
