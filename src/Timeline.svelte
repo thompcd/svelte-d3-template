@@ -52,7 +52,9 @@
     </ul>
 </header>
 {#await promise}
-<p>Loading...</p>
+<main class="grid">
+    <span style="justify-self: center; padding: 4rem;">Loading...</span>
+</main>
 {:then value}
 <main class="grid">
     <ul class="flatGrid unformatted-list">
@@ -114,7 +116,7 @@
         grid-row: 3 / span 1;
         grid-column: 2 / span 1;
         justify-self: center;
-        font-size: 2rem;
+        font-size: 1rem;
     }
     .legend{
         color: white;
